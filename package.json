@@ -1,0 +1,16 @@
+{
+  "name": "avdns",
+  "version": "1.0.0",
+  "description": "Intelligent DNS that scans before response",
+  "main": "index.js",
+  "dependencies": {
+    "clam-engine": "^2.0.1",
+    "dnsd": "^0.9.6"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT"
+}
