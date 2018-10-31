@@ -4,8 +4,10 @@
   "description": "Intelligent DNS that scans before response",
   "main": "index.js",
   "dependencies": {
+    "bluebird": "^3.5.2",
     "clam-engine": "^2.0.1",
-    "dnsd": "^0.9.6"
+    "dnsd": "^0.9.6",
+    "redis": "^2.8.0"
   },
   "devDependencies": {},
   "scripts": {
