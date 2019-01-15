@@ -60,7 +60,7 @@ ListImporter.prototype.insert = function (data) {
 			type: data[4]
 		};
 
-		this.currentBatch.set(["blacklist:" + host, JSON.stringify(record), "EX", this.ttl], function (e, res) {
+		this.currentBatch.set(["blacklist:" + host, JSON.stringify(record), /* "EX", this.ttl */], function (e, res) {
 			if (res != null) {
 				// Successful
 				// console.log("[List Importer] Imported record %s", host);
