@@ -22,7 +22,7 @@ const ListImporter = function (url, handlerType) {
 			// data[3]: Status
 			// data[4]: Threat Type
 
-			if (data.length != 7) return;
+			if (data.length != 7) return null;
 			var host = url.parse(data[2]).hostname;
 
 			return {
