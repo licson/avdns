@@ -3,7 +3,7 @@ const csv = require("fast-csv");
 const url = require("url");
 const db = require("./lib/db");
 
-const ListImporter = function (url) {
+const ListImporter = function (url, handlerType) {
 	var self = this;
 
 	this.listUrl = url;
@@ -13,6 +13,28 @@ const ListImporter = function (url) {
 	this.recordCount = 0;
 	this.currentBatch = db.multi(); // Holds the command queue
 
+	this.handlers = {
+		urlhaus: function (data) {
+			// CSV format of abuse.ch:
+			// data[0]: Item ID
+			// data[1]: Item Date
+			// data[2]: URL
+			// data[3]: Status
+			// data[4]: Threat Type
+
+			if (data.length != 7) return;
+			var host = url.parse(data[2]).hostname;
+
+			return {
+				source: "urlhaus",
+				status: data[3],
+				type: data[4]
+			};
+		}
+	};
+
+	this.listHandler = this.handlers[handlerType] || function () { };
+
 	this.csvStream = csv({ comment: "#" });
 
 	this.csvStream.on("data", function (data) {
@@ -20,55 +42,40 @@ const ListImporter = function (url) {
 	});
 
 	this.csvStream.on("end", function () {
-		console.log("[List Import] Completed!");
-
 		// Submit the last batch just in case
 		self.submitBatch();
 
-		// Cut the database connection
-		db.quit();
+		self.emit("end");
 	});
 }
 
+ListImporter.prototype = Object.create(require('events').EventEmitter.prototype);
+
 ListImporter.prototype.process = function () {
 	this.listStream = request(this.listUrl);
-	
+
 	this.listStream.on("error", function (e) {
 		console.error("[List Import] Error occured when fetching list! %s", e);
 	});
 
 	// Kickstart the CSV processor
 	this.listStream.pipe(this.csvStream);
+	this.emit("start");
 }
 
 ListImporter.prototype.insert = function (data) {
-	// CSV format of abuse.ch:
-	// data[0]: Item ID
-	// data[1]: Item Date
-	// data[2]: URL
-	// data[3]: Status
-	// data[4]: Threat Type
-	
-	if (data.length != 7) return;
-	var host = url.parse(data[2]).hostname;
+	var record = this.listHandler(data);
 
-	// Only insert when reported online
-	// if (data[3] == "online") {
-		var record = {
-			source: "urlhaus",
-			status: data[3],
-			type: data[4]
-		};
-
+	if (record !== null || typeof record !== "undefined") {
 		this.currentBatch.set(["blacklist:" + host, JSON.stringify(record), /* "EX", this.ttl */], function (e, res) {
 			if (res != null) {
 				// Successful
 				// console.log("[List Importer] Imported record %s", host);
 			}
 		});
-	// }
 
-	this.recordCount++;
+		this.recordCount++;
+	}
 
 	if (this.recordCount % this.bulkSize == 0) {
 		this.submitBatch();
@@ -93,7 +100,17 @@ if (process.argv0 == "node" && process.argv[1].indexOf("import.js") > -1) {
 	// Called from shell directly
 	// Malware list kindly provided from abuse.ch,
 	// updated every 5 minutes
-	const inst = new ListImporter("https://urlhaus.abuse.ch/downloads/csv/");
+	const inst = new ListImporter("https://urlhaus.abuse.ch/downloads/csv/", "urlhaus");
+
+	inst.on("start", function () {
+		console.log("[List Import] Start");
+	});
+
+	inst.on("end", function () {
+		console.log("[List Import] Completed!");
+		db.quit(); // Terminates DB connection so the program will exit
+	});
+
 	inst.process();
 } else {
 	module.exports = ListImporter;
