@@ -1,6 +1,6 @@
 const request = require("request");
 const csv = require("fast-csv");
-const url = require("url");
+const urllib = require("url");
 const db = require("./lib/db");
 
 const ListImporter = function (url, handlerType) {
@@ -23,7 +23,7 @@ const ListImporter = function (url, handlerType) {
 			// data[4]: Threat Type
 
 			if (data.length != 7) return null;
-			var host = url.parse(data[2]).hostname;
+			var host = urllib.parse(data[2]).hostname;
 
 			return {
 				source: "urlhaus",
