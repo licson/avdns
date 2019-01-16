@@ -27,6 +27,7 @@ const ListImporter = function (url, handlerType) {
 
 			return {
 				source: "urlhaus",
+				host: host,
 				status: data[3],
 				type: data[4]
 			};
@@ -67,7 +68,7 @@ ListImporter.prototype.insert = function (data) {
 	var record = this.listHandler(data);
 
 	if (record !== null || typeof record !== "undefined") {
-		this.currentBatch.set(["blacklist:" + host, JSON.stringify(record), /* "EX", this.ttl */], function (e, res) {
+		this.currentBatch.set(["blacklist:" + record.host, JSON.stringify(record)/*, "EX", this.ttl */], function (e, res) {
 			if (res != null) {
 				// Successful
 				// console.log("[List Importer] Imported record %s", host);
