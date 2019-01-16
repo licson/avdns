@@ -1,3 +1,4 @@
+const Promise = require('bluebird');
 const Resolver = require('./lib/resolver.js');
 const ListImporter = require('./import.js');
 
@@ -5,22 +6,27 @@ const ListImporter = require('./import.js');
 console.log("[System] Initializing...");
 
 function updateList() {
-    const inst = new ListImporter("https://urlhaus.abuse.ch/downloads/csv/", "urlhaus");
+	console.log("[List Updater] Start");
 
-    inst.on("start", function () {
-        console.log("[List Updater] Start");
-    });
+	Promise.all([
+		new Promise(function (resolve, reject) {
+			const urlhaus = new ListImporter("https://urlhaus.abuse.ch/downloads/csv/", "urlhaus");
+			urlhaus.on("end", function () { resolve(); });
+			urlhaus.process();
+		}),
+		new Promise(function (resolve, reject) {
+			const ransombl = new ListImporter("https://ransomwaretracker.abuse.ch/downloads/RW_DOMBL.txt", "generic");
+			ransombl.on("end", function () { resolve(); });
+			ransombl.process();
+		})
+	]).then(function () {
+		console.log("[List Updater] Completed!");
+	});
 
-    inst.on("end", function () {
-        console.log("[List Updater] Completed!");
-    });
-
-    inst.process();
-
-    // Regular Updates every 5 minutes
-    setTimeout(function () {
-        updateList();
-    }, 300000);
+	// Regular Updates every 5 minutes
+	setTimeout(function () {
+		updateList();
+	}, 300000);
 }
 
 updateList();
