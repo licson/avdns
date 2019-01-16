@@ -3,19 +3,27 @@ const ListImporter = require('./import.js');
 
 // Start importer and update list before DNS starts
 console.log("[System] Initializing...");
-const inst = new ListImporter("https://urlhaus.abuse.ch/downloads/csv/", "urlhaus");
 
-inst.on("start", function () {
-    console.log("[List Updater] Start");
-});
+function updateList() {
+    const inst = new ListImporter("https://urlhaus.abuse.ch/downloads/csv/", "urlhaus");
 
-inst.on("end", function () {
-    console.log("[List Updater] Completed!");
+    inst.on("start", function () {
+        console.log("[List Updater] Start");
+    });
 
-    // Start DNS service
-    new Resolver();
-});
+    inst.on("end", function () {
+        console.log("[List Updater] Completed!");
+    });
 
-inst.process();
+    inst.process();
 
+    // Regular Updates every 5 minutes
+    setTimeout(function () {
+        updateList();
+    }, 300000);
+}
 
+updateList();
+
+// Start DNS service
+new Resolver();

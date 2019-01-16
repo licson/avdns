@@ -68,7 +68,7 @@ ListImporter.prototype.insert = function (data) {
 	var record = this.listHandler(data);
 
 	if (record !== null && typeof record === "object") {
-		this.currentBatch.set(["blacklist:" + record.host, JSON.stringify(record)/*, "EX", this.ttl */], function (e, res) {
+		this.currentBatch.set(["blacklist:" + record.host, JSON.stringify(record), "EX", this.ttl], function (e, res) {
 			if (res != null) {
 				// Successful
 				// console.log("[List Importer] Imported record %s", host);
