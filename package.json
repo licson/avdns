@@ -10,7 +10,8 @@
     "fast-csv": "^2.4.1",
     "progress-bar": "^0.1.1",
     "redis": "^2.8.0",
-    "request": "^2.88.0"
+    "request": "^2.88.0",
+    "simple-statistics": "^7.0.0"
   },
   "devDependencies": {},
   "scripts": {
