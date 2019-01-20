@@ -43,6 +43,7 @@ function benchmark(server, cb) {
 			};
 
 			pbar.clear();
+			pbar = null;
 
 			cb(stats);
 			return;
