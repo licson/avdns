@@ -1,0 +1,15 @@
+# Lines start with a "#" are comments
+# that will be ignored
+#
+# Intelligent DNS
+192.168.90.21
+# HKT DNS
+218.102.60.110
+#218.102.52.81
+# HGC DNS
+210.0.128.250
+#210.0.128.251
+# HKBN DNS
+203.185.0.32
+#203.185.0.33
+#203.185.0.35

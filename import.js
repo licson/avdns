@@ -1,3 +1,4 @@
+const Promise = require("bluebird");
 const request = require("request");
 const csv = require("fast-csv");
 const urllib = require("url");
@@ -30,6 +31,11 @@ const ListImporter = function (url, handlerType) {
 				host: host,
 				status: data[3],
 				type: data[4]
+			};
+		},
+		generic: function (data) {
+			return {
+				host: data[0]
 			};
 		}
 	};
@@ -102,18 +108,23 @@ if (process.argv0 == "node" && process.argv[1].indexOf("import.js") > -1) {
 	// Called from shell directly
 	// Malware list kindly provided from abuse.ch,
 	// updated every 5 minutes
-	const inst = new ListImporter("https://urlhaus.abuse.ch/downloads/csv/", "urlhaus");
+	console.log("[List Updater] Start");
 
-	inst.on("start", function () {
-		console.log("[List Import] Start");
+	Promise.all([
+		new Promise(function (resolve, reject) {
+			const urlhaus = new ListImporter("https://urlhaus.abuse.ch/downloads/csv/", "urlhaus");
+			urlhaus.on("end", function () { resolve(); });
+			urlhaus.process();
+		}),
+		new Promise(function (resolve, reject) {
+			const ransombl = new ListImporter("https://ransomwaretracker.abuse.ch/downloads/RW_DOMBL.txt", "generic");
+			ransombl.on("end", function () { resolve(); });
+			ransombl.process();
+		})
+	]).then(function () {
+		console.log("[List Updater] Completed!");
+		db.quit();
 	});
-
-	inst.on("end", function () {
-		console.log("[List Import] Completed!");
-		db.quit(); // Terminates DB connection so the program will exit
-	});
-
-	inst.process();
 } else {
 	module.exports = ListImporter;
 }
