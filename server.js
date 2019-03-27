@@ -4,6 +4,7 @@ const Promise = require('bluebird');
 const Resolver = require('./lib/resolver.js');
 const ListImporter = require('./import.js');
 
+
 // Start DNS service
 if (cluster.isMaster) {
     // Start importer and update list before DNS starts
@@ -45,6 +46,8 @@ if (cluster.isMaster) {
         console.log(`worker ${worker.process.pid} died`);
     });
 } else {
+    // Initiate Config Channel
+    var configChannel = new (require('./lib/config.js'))();
     // Start DNS server
-    new Resolver();
+    new Resolver(configChannel);
 }
