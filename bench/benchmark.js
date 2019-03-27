@@ -19,7 +19,7 @@ const top1000Sites = fs.readFileSync('./top1000', 'utf8').split('\r\n');
 function benchmark(server, cb) {
 	dns.setServers([ server ]);
 
-	var samples = 1000;
+	var samples = top1000Sites.length;
 	var counter = 0;
 	var successful = 0;
 	var failed = 0;
