@@ -33,6 +33,13 @@ const ListImporter = function (url, handlerType) {
 				type: data[4]
 			};
 		},
+		malwaredomains: function (data) {
+			return {
+				source: "malwaredomains",
+				host: data[2],
+				type: data[3]
+			}
+		}, 
 		generic: function (data) {
 			return {
 				host: data[0]
@@ -43,7 +50,10 @@ const ListImporter = function (url, handlerType) {
 	this.excludeHosts = [ "github.com" ];
 	this.listHandler = this.handlers[handlerType] || function () { };
 
-	this.csvStream = csv({ comment: "#" });
+	this.csvStream = csv({
+		comment: "#",
+		delimiter: handlerType == "malwaredomains" ? "\t" : ","
+	});
 
 	this.csvStream.on("data", function (data) {
 		self.insert(data);
@@ -118,6 +128,11 @@ if (process.argv0 == "node" && process.argv[1].indexOf("import.js") > -1) {
 		}),
 		new Promise(function (resolve, reject) {
 			const ransombl = new ListImporter("https://ransomwaretracker.abuse.ch/downloads/RW_DOMBL.txt", "generic");
+			ransombl.on("end", function () { resolve(); });
+			ransombl.process();
+		}),
+		new Promise(function (resolve, reject) {
+			const ransombl = new ListImporter("http://mirror1.malwaredomains.com/files/domains.txt", "malwaredomains");
 			ransombl.on("end", function () { resolve(); });
 			ransombl.process();
 		})
