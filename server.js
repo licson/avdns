@@ -3,7 +3,7 @@ const cluster = require('cluster');
 const Promise = require('bluebird');
 const Resolver = require('./lib/resolver.js');
 const ListImporter = require('./import.js');
-const WebServer = require('./web.js');
+const WebServer = require('./lib/web.js');
 
 // Start DNS service
 if (cluster.isMaster) {
