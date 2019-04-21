@@ -41,27 +41,30 @@ if (cluster.isMaster) {
 
 	updateList();
 
+	// Start Web server
+	// P.S. Don't start on the child processes as things may screw up
+	new WebServer();
+
 	console.log("[System] Spawning %d threads...", os.cpus().length);
 
 	if (os.platform() == 'win32') {
 		// Windows does not support sharing UDP sockets, just kickstart everything
 		var configChannel = new (require('./lib/config.js'))();
 		new Resolver(configChannel);
-		new WebServer();
 	} else {
 		for (var i = 0; i < os.cpus().length; i++) {
 			cluster.fork();
 		}
 	}
 
-	cluster.on('exit', (worker, code, signal) => {
+	cluster.on('exit', (worker) => {
 		console.log(`worker ${worker.process.pid} died`);
 	});
 } else {
+	// We are the child processes
+
 	// Initiate Config Channel
 	var configChannel = new (require('./lib/config.js'))();
 	// Start DNS server
 	new Resolver(configChannel);
-	// Start Web server
-	new WebServer();
 }
