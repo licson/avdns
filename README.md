@@ -13,6 +13,9 @@ _Still in progress......_
 - lib
 
   Components for Intelligent DNS
+- res
+
+  Resources for web server
 - server.js
 
   Main script to start the server daemon
