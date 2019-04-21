@@ -102,12 +102,12 @@ ListImporter.prototype.insert = function (data) {
 
 ListImporter.prototype.submitBatch = function () {
 	var self = this;
-	this.currentBatch.exec(function (e, replies) {
+	this.currentBatch.exec(function (e) {
 		self.bulkCount++;
-		console.log("[List Importer] Batch %d", self.bulkCount);
+		// console.log("[List Importer] Batch %d", self.bulkCount);
 
 		if (e) {
-			console.error("[List Importer] Import error: %s", e);
+			console.error("[List Importer] Import error on batch #%d: %s", self.bulkCount - 1, e);
 		}
 	});
 
