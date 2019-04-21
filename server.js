@@ -45,13 +45,13 @@ if (cluster.isMaster) {
 	// P.S. Don't start on the child processes as things may screw up
 	new WebServer();
 
-	console.log("[System] Spawning %d threads...", os.cpus().length);
-
 	if (os.platform() == 'win32') {
 		// Windows does not support sharing UDP sockets, just kickstart everything
 		var configChannel = new (require('./lib/config.js'))();
 		new Resolver(configChannel);
 	} else {
+		console.log("[System] Spawning %d threads...", os.cpus().length);
+		
 		for (var i = 0; i < os.cpus().length; i++) {
 			cluster.fork();
 		}
