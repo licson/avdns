@@ -24,11 +24,10 @@ _Still in progress......_
 - Check for malicious domain records and reject with NXDOMAIN
 - Check DNSBL for IP addresses
 - Respect DNS TTL values (a.k.a. Implemented DNS cache)
+- DNSBL for domain names
+- Handling of more DNS types (MX, SRV, PTR, etc.)
 
 ## Items to do
 
-- DNSBL for domain names
-- Grab content samples for domains with HTTP(s) endpoint
-- Call ClamAV to scan samples
-- Handling of more DNS types (MX, SRV, PTR, etc.)
 - Find more threat listings source
+- Web Interface
