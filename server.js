@@ -43,8 +43,15 @@ if (cluster.isMaster) {
 
 	console.log("[System] Spawning %d threads...", os.cpus().length);
 
-	for (var i = 0; i < os.cpus().length; i++) {
-		cluster.fork();
+	if (os.platform() == 'win32') {
+		// Windows does not support sharing UDP sockets, just kickstart everything
+		var configChannel = new (require('./lib/config.js'))();
+		new Resolver(configChannel);
+		new WebServer();
+	} else {
+		for (var i = 0; i < os.cpus().length; i++) {
+			cluster.fork();
+		}
 	}
 
 	cluster.on('exit', (worker, code, signal) => {
