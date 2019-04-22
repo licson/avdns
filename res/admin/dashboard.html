@@ -1,12 +1,330 @@
-<html>
-    <head>
-        <meta charset="utf*8" />
-        <title>Intelligent DNS Management</title>
-    </head>
-    <body>
-        <form>
-            <label for="upper_resolvers">Parent Resolvers</label>
-            <textarea name="upper_resolvers"></textarea>
-        </form>
-    </body>
+<!doctype html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<title>Intelligent DNS Management</title>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+		integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+		integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+		crossorigin="anonymous"></script>
+	<style>
+		.bd-placeholder-img {
+			font-size: 1.125rem;
+			text-anchor: middle;
+			-webkit-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
+		}
+
+		body {
+			font-size: .875rem;
+		}
+
+		.feather {
+			width: 16px;
+			height: 16px;
+			vertical-align: text-bottom;
+		}
+
+		/*
+		* Sidebar
+		*/
+
+		.sidebar {
+			position: fixed;
+			top: 0;
+			bottom: 0;
+			left: 0;
+			z-index: 100;
+			/* Behind the navbar */
+			padding: 48px 0 0;
+			/* Height of navbar */
+			box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+		}
+
+		.sidebar-sticky {
+			position: relative;
+			top: 0;
+			height: calc(100vh - 48px);
+			padding-top: .5rem;
+			overflow-x: hidden;
+			overflow-y: auto;
+			/* Scrollable contents if viewport is shorter than content. */
+		}
+
+		@supports ((position: -webkit-sticky) or (position: sticky)) {
+			.sidebar-sticky {
+				position: -webkit-sticky;
+				position: sticky;
+			}
+		}
+
+		.sidebar .nav-link {
+			font-weight: 500;
+			color: #333;
+		}
+
+		.sidebar .nav-link .feather {
+			margin-right: 4px;
+			color: #999;
+		}
+
+		.sidebar .nav-link.active {
+			color: #007bff;
+		}
+
+		.sidebar .nav-link:hover .feather,
+		.sidebar .nav-link.active .feather {
+			color: inherit;
+		}
+
+		.sidebar-heading {
+			font-size: .75rem;
+			text-transform: uppercase;
+		}
+
+		/*
+		* Content
+		*/
+
+		[role="main"] {
+			padding-top: 133px;
+			/* Space for fixed navbar */
+		}
+
+		[role="main"] h2 {
+			margin-top: 0.75em;
+			margin-bottom: 0.25em;
+		}
+
+		@media (min-width: 768px) {
+			[role="main"] {
+				padding-top: 48px;
+				/* Space for fixed navbar */
+			}
+		}
+
+		/*
+		* Navbar
+		*/
+
+		.navbar-brand {
+			padding-top: .75rem;
+			padding-bottom: .75rem;
+			font-size: 1rem;
+			background-color: rgba(0, 0, 0, .25);
+			box-shadow: inset -1px 0 0 rgba(0, 0, 0, .25);
+		}
+
+		.navbar .form-control {
+			padding: 0.5em;
+			border-width: 0;
+			border-radius: 0;
+		}
+
+		.form-control-dark {
+			color: rgb(167, 167, 167);
+			background-color: rgba(255, 255, 255, .1);
+			border-color: rgba(255, 255, 255, .1);
+		}
+
+		.c-d-none {
+			display: none;
+		}
+
+		@media (min-width: 768px) {
+			.bd-placeholder-img-lg {
+				font-size: 3.5rem;
+			}
+		}
+	</style>
+</head>
+
+<body>
+	<nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
+		<a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">Intelligent DNS</a>
+		<div id="status-message" class="form-control form-control-dark w-100">Not Connected</div>
+		<ul class="navbar-nav px-3">
+			<li class="nav-item text-nowrap">
+				<a class="nav-link" href="/admin/logout">Sign out</a>
+			</li>
+		</ul>
+	</nav>
+
+	<div class="container-fluid">
+		<div class="row">
+			<nav class="col-md-2 d-none d-md-block bg-light sidebar">
+				<div class="sidebar-sticky">
+					<ul class="nav flex-column" id="page-nav">
+						<li class="nav-item">
+							<a class="nav-link active" href="#" data-navigate-to="sec-logs">
+								<span data-feather="activities"></span>
+								Realtime Logs
+							</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="#" data-navigate-to="sec-memory">
+								<span data-feather="bar-chart-2"></span>
+								Memory Usage
+							</a>
+						</li>
+					</ul>
+
+					<h6
+						class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+						<span>Settings</span>
+						<a class="d-flex align-items-center text-muted" href="#">
+							<span data-feather="settings"></span>
+						</a>
+					</h6>
+					<ul class="nav flex-column mb-2">
+						<li class="nav-item">
+							<a class="nav-link" href="#" data-config="upper_resolvers">
+								<span data-feather="chevrons-up"></span>
+								Parent Resolvers
+							</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="#" data-config="short_lived_cache_interval">
+								<span data-feather="watch"></span>
+								RAM Cache Timeout
+							</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="#" data-config="show_block_page">
+								<span data-feather="x-square"></span>
+								Enable Blocking Page
+							</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="#" data-config="dnsbl_list">
+								<span data-feather="box"></span>
+								DNSBL Sources
+							</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="#" data-config="dnsbl_ratio">
+								<span data-feather="box"></span>
+								Block Ratio
+							</a>
+						</li>
+					</ul>
+				</div>
+			</nav>
+
+			<section role="main" id="sec-logs" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+				<h2>Realtime Logs</h2>
+				<div class="table-responsive">
+					<table class="table table-striped table-sm" id="realtime-logs">
+						<thead>
+							<tr>
+								<th>Time</th>
+								<th>Message</th>
+							</tr>
+						</thead>
+						<tbody></tbody>
+					</table>
+				</div>
+			</section>
+
+			<section role="main" id="sec-memory" class="col-md-9 ml-sm-auto col-lg-10 px-4 c-d-none">
+				<h2>Memory Usage</h2>
+
+				<canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas>
+			</section>
+
+		</div>
+	</div>
+	<script src="https://code.jquery.com/jquery-3.4.0.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.9.0/feather.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script>
+	<script>
+		$(function () {
+			var settings = {};
+			var chan = new EventSource("/admin/channels");
+			var chart =  new Chart($('#myChart').get(0), {
+				type: 'line',
+				data: {
+					labels: [],
+					datasets: [{
+						data: [],
+						lineTension: 0,
+						backgroundColor: 'transparent',
+						borderColor: '#007bff',
+						borderWidth: 4,
+						pointBackgroundColor: '#007bff'
+					}]
+				},
+				options: {
+					scales: {
+						yAxes: [{
+							ticks: {
+								beginAtZero: false
+							}
+						}]
+					},
+					legend: {
+						display: false
+					}
+				}
+			});
+
+			chan.addEventListener('open', function () {
+				$('#status-message').text("Connected to instance.");
+			}, false);
+
+			chan.addEventListener('error', function () {
+				if (chan.readyState == chan.CLOSED) {
+					$('#status-message').text("Disconnected due to error. Will reconnect shortly...");
+				}
+			});
+
+			chan.addEventListener('logs', function (e) {
+				$('#realtime-logs tbody').append(
+					$('<tr/>').append(
+						$('<td/>').text(moment().format())
+					).append(
+						$('<td/>').text(e.data)
+					)
+				);
+			}, false);
+
+			chan.addEventListener('mem', function (e) {
+				chart.data.datasets[0].data.push(parseFloat(e.data));
+				chart.data.labels.push(moment().format('hh:mm:ss'));
+
+				if (chart.data.datasets[0].data.length > 20) chart.data.datasets[0].data.shift();
+				if (chart.data.labels.length > 20) chart.data.labels.shift();
+
+				chart.update();
+			}, false);
+
+			$('a[data-navigate-to]').click(function (e) {
+				e.preventDefault();
+
+				var navTo = $(this).attr('data-navigate-to');
+				$('section[role=main]:not(#' + navTo + ')').fadeOut(250);
+				$('#' + navTo).fadeIn(250);
+
+				$(this).addClass('active');
+				$('a[data-navigate-to]').not(this).removeClass('active');
+			});
+
+			$.ajax({
+				url: '/admin/settings',
+				dataType: 'json',
+				success: function (data) {
+					console.log('Current config values: ', data);
+					settings = data;
+				}
+			});
+		});
+	</script>
+</body>
+
 </html>
