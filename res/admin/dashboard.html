@@ -98,7 +98,7 @@
 
 		[role="main"] h2 {
 			margin-top: 0.75em;
-			margin-bottom: 0.25em;
+			margin-bottom: 1.25em;
 		}
 
 		@media (min-width: 768px) {
@@ -136,6 +136,22 @@
 			display: none;
 		}
 
+		.active-setting {
+			background-color: rgb(255, 255, 175);
+		}
+
+		input.setting-item:not([type=checkbox]) {
+			margin-top: 1.25em;
+		}
+
+		textarea.setting-item {
+			height: 100%;
+		}
+
+		#sec-settings .row {
+			margin-bottom: 1em;
+		}
+
 		@media (min-width: 768px) {
 			.bd-placeholder-img-lg {
 				font-size: 3.5rem;
@@ -162,7 +178,7 @@
 					<ul class="nav flex-column" id="page-nav">
 						<li class="nav-item">
 							<a class="nav-link active" href="#" data-navigate-to="sec-logs">
-								<span data-feather="activities"></span>
+								<span data-feather="activity"></span>
 								Realtime Logs
 							</a>
 						</li>
@@ -183,33 +199,39 @@
 					</h6>
 					<ul class="nav flex-column mb-2">
 						<li class="nav-item">
-							<a class="nav-link" href="#" data-config="upper_resolvers">
+							<a class="nav-link" href="#" data-navigate-to="sec-settings" data-config="upper_resolvers">
 								<span data-feather="chevrons-up"></span>
 								Parent Resolvers
 							</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link" href="#" data-config="short_lived_cache_interval">
+							<a class="nav-link" href="#" data-navigate-to="sec-settings" data-config="short_lived_cache_interval">
 								<span data-feather="watch"></span>
 								RAM Cache Timeout
 							</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link" href="#" data-config="show_block_page">
+							<a class="nav-link" href="#" data-navigate-to="sec-settings" data-config="show_block_page">
 								<span data-feather="x-square"></span>
 								Enable Blocking Page
 							</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link" href="#" data-config="dnsbl_list">
+							<a class="nav-link" href="#" data-navigate-to="sec-settings" data-config="dnsbl_list">
 								<span data-feather="box"></span>
 								DNSBL Sources
 							</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link" href="#" data-config="dnsbl_ratio">
+							<a class="nav-link" href="#" data-navigate-to="sec-settings" data-config="dnsbl_ratio">
 								<span data-feather="box"></span>
 								Block Ratio
+							</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="#" data-navigate-to="sec-settings" data-config="whitelist">
+								<span data-feather="list"></span>
+								Website Whitelist
 							</a>
 						</li>
 					</ul>
@@ -237,11 +259,71 @@
 				<canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas>
 			</section>
 
+			<section role="main" id="sec-settings" class="col-md-9 ml-sm-auto col-lg-10 px-4 c-d-none">
+				<h2>Settings</h2>
+
+				<div class="container">
+					<div class="row">
+						<div class="col">
+							<h4 rel="upper_resolvers">Parent Resolvers</h3>
+							<p>Change the upper DNS server that Intelligent DNS ask for domain records.</p>
+						</div>
+						<div class="col-8">
+							<textarea class="setting-item form-control w-100" name="upper_resolvers"></textarea>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<h4 rel="short_lived_cache_interval">RAM Cache Timeout</h3>
+							<p>Change the timeout value for memory caches in miliseconds.</p>
+						</div>
+						<div class="col-8">
+							<input class="setting-item form-control w-100" name="short_lived_cache_interval" type="number">
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<h4 rel="show_block_page">Show Block Page</h3>
+							<p>Show an explicit block page instead of DNS errors.</p>
+						</div>
+						<div class="col-8">
+							<input class="setting-item form-control w-100" name="show_block_page" type="checkbox" value="1">
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<h4 rel="dnsbl_list">DNSBL Sources</h3>
+							<p>Change the list of DNSBL servers to contact and check for malicious activities.</p>
+						</div>
+						<div class="col-8">
+							<textarea class="setting-item form-control w-100" name="dnsbl_list"></textarea>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<h4 rel="dnsbl_ratio">Block Ratio</h3>
+							<p>Controls the threshole of the number of DNSBL servers tested for considering whether to block a domain.</p>
+						</div>
+						<div class="col-8">
+							<input class="setting-item form-control w-100" name="dnsbl_ratio" type="number" min="0" max="1" step="0.1">
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<h4 rel="whitelist">Website Whitelist</h3>
+							<p>Configure the domains to skip checks entirely.</p>
+						</div>
+						<div class="col-8">
+							<textarea class="setting-item form-control w-100" name="whitelist"></textarea>
+						</div>
+					</div>
+				</div>
+			</section>
 		</div>
 	</div>
 	<script src="https://code.jquery.com/jquery-3.4.0.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.9.0/feather.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script>
 	<script>
 		$(function () {
@@ -273,6 +355,8 @@
 					}
 				}
 			});
+
+			feather.replace();
 
 			chan.addEventListener('open', function () {
 				$('#status-message').text("Connected to instance.");
@@ -308,11 +392,53 @@
 				e.preventDefault();
 
 				var navTo = $(this).attr('data-navigate-to');
-				$('section[role=main]:not(#' + navTo + ')').fadeOut(250);
-				$('#' + navTo).fadeIn(250);
+				$('section[role=main]:not(#' + navTo + ')').hide();
+				$('#' + navTo).show();
 
 				$(this).addClass('active');
 				$('a[data-navigate-to]').not(this).removeClass('active');
+
+				var configItem = $(this).attr('data-config');
+				if (configItem) {
+					$('h4[rel=' + configItem + ']').parent().parent().addClass('active-setting');
+					$('h4[rel]').not('[rel=' + configItem + ']').parent().parent().removeClass('active-setting');
+				}
+			});
+
+			$('.setting-item').on('change', function () {
+				var field = $(this).attr('name');
+				var obj = {};
+
+				switch (field) {
+					case "dnsbl_list":
+					obj[field] = JSON.stringify($(this).val().split('\n').map(function (v) { return { name: v, dnsBased: false }; }));
+					break;
+
+					case "whitelist":
+					case "upper_resolvers":
+					obj[field] = JSON.stringify($(this).val().split('\n'));
+					break;
+
+					case "show_block_page":
+					obj[field] = $(this).prop('checked') == true ? "1" : "0";
+					break;
+
+					default:
+					obj[field] = $(this).val();
+					break;
+				}
+
+				$.ajax({
+					url: '/admin/settings',
+					dataType: 'json',
+					method: 'POST',
+					data: obj,
+					success: function (res) {
+						if (res.success == true) {
+							$('#status-message').text("Settings saved.");
+						}
+					}
+				});
 			});
 
 			$.ajax({
@@ -321,6 +447,30 @@
 				success: function (data) {
 					console.log('Current config values: ', data);
 					settings = data;
+
+					Object.keys(settings).forEach(function (opt) {
+						switch (opt) {
+							case "show_block_page":
+							$('.setting-item[name=' + opt + ']').attr("checked", settings[opt] == "1" ? "checked" : '');
+							break;
+
+							case "upper_resolvers":
+							$('.setting-item[name=' + opt + ']').val(settings[opt] == 'null' ? '' : JSON.parse(settings[opt]).join('\n'));
+							break;
+
+							case "dnsbl_list":
+							$('.setting-item[name=' + opt + ']').val(JSON.parse(settings[opt]).map(function (v) { return v.name; }).join('\n'));
+							break;
+
+							case "whitelist":
+							$('.setting-item[name=' + opt + ']').val(JSON.parse(settings[opt]).join('\n'));
+							break;
+							
+							default:
+							$('.setting-item[name=' + opt + ']').val(settings[opt]);
+							break;
+						}
+					});
 				}
 			});
 		});
